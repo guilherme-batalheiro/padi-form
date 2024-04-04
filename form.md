@@ -189,6 +189,88 @@ $M = (\chi, A, \{P_a\}, c)$
 - Its transition probabilities, \{P_a\}, $a \in A$
 - The immediate cost function, $c$
 
+#### Policies 
+
+$h_t = \{x_0, a_0, x_1, a_1, ..., x_{t-1}, a_{t-1}\}$
+
+- Deterministic:
+    - if there is one action that is selected with probability 1\
+**Does not choose actions randomly**
+- Markov:
+    - if the distribution over actions given the history depends only on the last
+    state (and t)\
+**Depends only on the last state**
+- Stationary:
+    - if the distribution over actions given the history depends only on the last
+    state (and not on t)\
+    **Fixed through time**
+
+#### $P_\pi$
+<img src="p_pi.png" width="400" height="190">
+
+#### $c_\pi$
+<img src="c_pi.png" width="300" height="190">
+
+#### $J^\pi$ (cost to go function per each initial state)
+
+$$ J^\pi = c_\pi + \gamma P_\pi J^\pi $$
+$$ J^\pi = (I - \gamma P_\pi)^{-1} c_\pi $$
+
+#### Value iteration for $J^*$
+
+$$ J^*(x) = \min_a \left[ c(x, a) + \gamma \sum_{y \in X} P_a(y | x)J^*(y)
+\right] $$
+
+<img src="value_iter/1.png" width="400" height="190">
+<img src="value_iter/2.png" width="400" height="190">
+<img src="value_iter/3.png" width="400" height="190">
+<img src="value_iter/4.png" width="400" height="190">
+<img src="value_iter/5.png" width="400" height="190">
+
+#### $Q^\pi$ (cost-to-go for a fixed policy, given the initial state and action)
+
+**Why should we care?**\
+We can compute cost-to-go functions from Q-functions:
+
+$$ J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)] $$
+$$ J^*(x) = \min_a Q^*(x, a) $$
+
+We can compute the optimal policy directly from $Q^*$:
+
+$$ \pi^*(x) = \underset{a}{\text{arg min }} Q^*(x, a) $$
+
+Computation:
+- Since
+  $$ Q^\pi(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' \mid x)J^\pi(x') $$
+- and
+  $$ J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)] $$
+- then
+$$ Q^\pi(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' \mid
+x)\mathbb{E}_{a' \sim \pi(x')} [Q^\pi(x', a')] $$
+
+#### Value iteration for $Q^*$
+$$ Q^*(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' | x) \min_{a'}
+Q^*(x', a') $$
+
+
+
+#### Policy iteration
+<img src="pol_iter/1.png" width="400" height="220">
+<img src="pol_iter/2.png" width="400" height="220">
+
+#### Large problems
+- **State aggregation**
+    - States are “aggregated” into “chunks”
+    - Each chunk is treated as a “super-state” 
+    - Very limited representation power
+- **Linear approximations**
+    - States described by vector of “features” 
+    - J and Q are represented as combinations of features
+    - Good representation power; difficult to choose good features
+- **Averagers**
+    - Approximations that do not extrapolate
+    - Such architectures are known as averagers
+
 ---
 ### POMDP (partial observed Markov decision problems)
 
@@ -200,6 +282,56 @@ $M = (\chi, A, Z, \{P_a\}, \{O_a\}, c)$
 - Its transition probabilities, \{P_a\}, $a \in A$
 - Its observation probabilities, \{O_a\}, $a \in A$
 - The immediate cost function, $c$
+
+#### Policies 
+
+$h_t = \{z_0, a_0, z_1, a_1, ..., z_{t-1}, a_{t-1}\}$ (z is an observation not a
+state)
+
+the type of policies are equal to the **MDP** plus
+
+- Memoryless:
+    - if the distribution over actions given the history depends
+only on the last observation
+
+#### Forward alghorithm for POMDP
+
+<img src="pomdp_old_trick/1.png" width="350" height="190">
+<img src="pomdp_old_trick/2.png" width="350" height="190">
+<img src="pomdp_old_trick/3.png" width="350" height="190">
+<img src="pomdp_old_trick/4.png" width="350" height="190">
+<img src="pomdp_old_trick/5.png" width="350" height="190">
+
+#### The belief
+
+We call the distribution $\mu_{t|0:t}$ the belief at time t belief $b(t)$
+
+When we want to calculate the $J^*$ we have a problem because we don't have
+the actualy state we have an distribution $b(t)$ that why we need to use
+heuristics
+
+#### Heuristics for value iteration
+- MLS\
+    Select the most likely state
+- AV\
+    After choosing a an action for each state we sum all believes for the
+    specific the bigger wins   
+- Q-MDP
+    $$ J^*(b) = \min_{a \in A} \sum_{x \in \mathcal{X}} b(x) Q^*_{\text{MDP}}(x, a) $$
+    Weighted average of optimal MDP Q-values
+- FIB heuristic
+    $$
+    Q_{\text{FIB}}(x, a) = c(x, a) + \gamma \sum_{z \in \mathcal{Z}}
+    \min_{a' \in A} \sum_{x' \in \mathcal{X}} P_a(x' | x) O_a(z | x')
+    Q_{\text{FIB}}(x', a')
+    $$
+    $$
+    \pi_{\text{FIB}}(b) = \underset{a \in A}{\text{argmin}} \sum_{x \in
+    \mathcal{X}} b(x) Q_{\text{FIB}}(x, a)
+    $$
+
+#### Point based
+Select a finite set Bsample of beliefs to perform updates
 
 ---
 ### Inverse reinforcement learning
