@@ -56,6 +56,15 @@ We use the Markov property
 
 
 #### Forward alghorithm
+Given a sequence of observations $z_{0:t}$, the forward mapping $\alpha_t :
+\mathcal{X} \to \mathbb{R}$ is defined for each $t$ as
+
+$$
+\alpha_t(x) = \mathbb{P}_{\mu_0}[X_t = x, Z_{0:t} = z_{0:t}]
+$$
+
+How likely is it that I end up in $x$ having observed $z_{0:t}$
+
 Given observation sequence $z_{0:T}$
 1. Multiply initial distribution by $O(z_0|:)$\
     equivalent to: $\alpha_0 =
@@ -71,6 +80,16 @@ Given observation sequence $z_{0:T}$
 <img src="foward_alg_alpha_0.png" width="400" height="200">
 
 #### Forward-backward algorithm
+
+Given a sequence of observations $z_{0:t}$, the backward mapping $ \beta_t :
+\mathcal{X} \to \mathbb{R}$ is defined for each $t$ as
+
+$$
+\beta_t(x) = \mathbb{P}_{\mu_0} [Z_{t+1:T} = z_{t+1:T} | X_t = x]
+$$
+
+How likely is it that I observe $z_{t+1:T}$ knowing that I'm in $x$
+
 **Require**: Observation sequence $Z_{0:T}$
 
 1. **Initialize**\
@@ -239,6 +258,9 @@ We can compute the optimal policy directly from $Q^*$:
 
 $$ \pi^*(x) = \underset{a}{\text{arg min }} Q^*(x, a) $$
 
+
+<img src="q_pi.png" width="500" height="300">
+
 Computation:
 - Since
   $$ Q^\pi(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' \mid x)J^\pi(x') $$
@@ -334,20 +356,26 @@ heuristics
 Select a finite set Bsample of beliefs to perform updates
 
 ---
-### Inverse reinforcement learning
+
+### Learning from examples in MDPs
+We don't know the cost matrix neither the probability matrix
+
+#### The inductive learning assumption
+If we learn from a sufficiently large set of examples, we will do well in
+the actual task.
+
+- MDP-induced metric \
+    “clone” the observed behavior, using the MDP structure to generalize
+
+- Inverse reinforcement learning \
+    “invert” the MDP 
+
+
+#### Inverse reinforcement learning
+
+**If someone shows the optimal policy, can we recover the task?** learn the cost function.
 
 Agent is expected to recover the cost function implied by the policy $\pi^*$. 
-
-The IRL problem is intrinsically ill-posed, as there are infinitely many
-possible solutions for
-each instance of the problem.
-
-IRL problems:
-- Multiple Reward Functions for the Same Behavior: There can be infinitely
-  many reward functions that would make the observed expert behavior appear
-  optimal. 
-- Ambiguity in Observed Behavior: The observed behavior of an expert is
-  typically a limited subset of all possible behaviors in the environment.
 
 An ill-posed problem refers to a problem that violates at least one of the
 conditions:
@@ -356,5 +384,93 @@ conditions:
 - Stability: The solution's behavior changes continuously with the initial
   conditions or parameters. In other words, small changes in the input lead to
   small changes in the output. 
+
+If we are given the optimal policy, then for all $x \in \mathcal{X}$ and all $a \in \mathcal{A}$,
+
+$$J^*(x) \leq Q^*(x, a)$$
+
+$$c_{\pi} + \gamma P_{\pi} J^* \leq c_a + \gamma P_a J^*$$
+
+$$(P_{\pi} - P_a)(I - \gamma P_{\pi})^{-1}c \leq 0$$
+
+problem: all polices are optimal if c = 0 this is a ill-defined problem
+
+#### Stochastic approximation (Interative learning)
+
+- Model-based methods \
+    the model trys to find the cost matrix and the probability matrix
+- Value-based methods \
+    the model trys to find the $Q^*$ and the $J^*$
+- Policy-based methods \
+    the model trys to find de policy
+
+##### Model-based methods
+We update the cost function and the transition probabilities with the mean
+updated.
+
+$$\hat{C}(x_t, a_t) = \hat{C}(x_t, a_t) + \alpha_t (c_t - \hat{C}(x_t, a_t))$$
+$$\hat{P}(x' | x_t, a_t) = \hat{P}(x' | x_t, a_t) + \alpha_t (I[x_{t+1} = x'] -
+\hat{P}(x' | x_t, a_t))$$
+
+The model-based approach described converges to the true parameters P and c as
+long as every state and action are visited infinitely often.
+
+After each update we run VI update
+
+$$J_{t+1}(x_t) = \hat{c}(x_t) + \gamma \sum_{x' \in \mathcal{X}} \hat{P}(x' |
+x_t)J_t(x')$$
+
+#### $TD(\lambda)$
+
+<img src="td_alg.png" width="650" height="350">
+
+**Theorem:** For any $0 \leq \lambda \leq 1$, as long as every state is visited
+infinitely often, TD($\lambda$) converges to $J^\pi$ w.p.1.
+
+#### $Q$ learning
+
+$$Q_{t+1}(x_t, a_t) = Q_t(x_t, a_t) + \alpha_t \left[ c_t + \gamma \min_{a'
+\in A} Q_t(x_{t+1}, a') - Q_t(x_t, a_t) \right]$$
+
+Theorem: As long as every state-action pair is visited infinitely often,
+Q-learning converges to $Q*$ w.p.1.
+
+#### Exploration vs exploitation
+
+How can we visit every state action pair infinitely often?
+
+- **Exploration**, i.e., trying new actions (or actions that have
+been less experimented with)
+
+- **Exploitation**, i.e., using the knowledge already acquired to
+select the seemingly better actions
+
+#### SARSA 
+
+$$Q_{t+1}(x_t, a_t) = Q_t(x_t, a_t) + \alpha_t \left[ c_t + \gamma
+Q_t(x_{t+1}, a_{t+1}) - Q_t(x_t, a_t) \right]$$
+
+#### $Q$-learning vs SARSA
+
+- Q-learning is an off-policy algorithm \
+Learns the value of one policy while following another
+
+- SARSA (like $TD(\lambda)$) is an on-policy algorithm \
+Learns the value of the policy that it follows
+
+    - For SARSA to learn Q* must be combined with policy improvement
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
