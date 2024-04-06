@@ -1,81 +1,103 @@
-# Formulário PADI
+## MC (Markov Chains)
 
-### MC
-#### Key Property: Markov property
+#### Markov property
+
 The state at instant t is enough to predict the state at instant t + 1
 
 #### Assumptions
+
 - There is only a finite number of possible states
 - The probabilities do not depend on t
 
 #### Stability
-Irreducibility:\
-A chain is irreducible if any state $y$ can be reached from any other state $x$
 
-Communicating classes:\
-<img src="communicating_classes.png" width="400" height="200">
+- **Irreducibility**
 
-Aperiodicity:\
-$d_x = \gcd \{ t \in \mathbb{N} | P^t(x | x) > 0, t > 0 \}$
+    A chain is irreducible if any state $y$ can be reached from any other
+    state $x$
 
-- $\gcd$ represents the greatest common divisor function\
+- **Communicating classes**
 
-A state $x$ is aperiodic if $dx = 1$
+    <img src="communicating_classes.png" width="400" height="200">
 
-exmaple:\
-<img src="aperiodicity.png" width="400" height="200">
+- **Aperiodicity**
 
-Key stability results:
-- An irreducible and aperiodic Markov chain possesses a
-stationary distribution.
-- For an irreducible and aperiodic Markov chain with stationary
-distribution $\mu^*$,\
-$\lim_{t \to \infty} \mu_0 P^t = \mu^*$\
-for any initial distribution $\mu_0$.
+    $d_x = \gcd \{ t \in \mathbb{N} | P^t(x | x) > 0, t > 0 \}$
+    $\gcd$ represents the greatest common divisor function
+
+    A state $x$ is aperiodic if $dx = 1$\
+    > *example:*
+    >
+    > <img src="aperiodicity.png" width="400" height="200">
 
 
-if the chain is irreducible and aperiodic, it is ergodic.
+> **Key stability results**
+>
+> - An irreducible and aperiodic Markov chain possesses a
+> stationary distribution.
+>
+> - For an irreducible and aperiodic Markov chain with stationary
+>   distribution $\mu^*$,
+>
+>   $\lim_{t \to \infty} \mu_0 P^t = \mu^*$
+>
+>   for any initial distribution $\mu_0$.
+>
+> - If the chain is irreducible and aperiodic, it is ergodic.
 
----
-### Hidden Markov models
-Model for sequential process with partial observability
+## HMC (Hidden Markov models)
 
-A HMM can be represented compactly as a tuple $(X, Z, P, O)$
+Model for sequential process with partial observability.
+
+A HMM can be represented compactly as a tuple $(X, Z, P, O)$.
 
 #### Estimation
-- Filtering (Forward alghorithm) \
-Given a sequence of observations, estimate the final state
 
-- Marginal smoothing (Forward-backward algorithm)\
-Given a sequence of observations, estimate some state in the middle
+- Filtering (Forward alghorithm)
 
-- Smoothing (Viterbi algorithm) \
-Given a sequence of observations, estimate the whole sequence of states
+    Given a sequence of observations, estimate the final state
 
-- Prediction\
-Given a sequence of observations, predict future states\
-We compute µT|0:T using the forward algorithm\
-We use the Markov property
+- Marginal smoothing (Forward-backward algorithm)
+
+    Given a sequence of observations, estimate some state in the middle
+
+- Smoothing (Viterbi algorithm)
+
+    Given a sequence of observations, estimate the whole sequence of states
+
+- Prediction
+
+    Given a sequence of observations, predict future states
+
+    > We compute µT|0:T using the forward algorithm.
+    >
+    > Then we use the Markov property.\
+    > $\boldsymbol{\mu}_{T+1 \mid 0: T}=\boldsymbol{\mu}_{T \mid 0:
+    > T} \mathbf{P}$
 
 
-#### Forward alghorithm
-Given a sequence of observations $z_{0:t}$, the forward mapping $\alpha_t :
+#### Forward algorithm 
+
+Given a sequence of observations $z_{0:t}$, the **forward mapping** $\alpha_t :
 \mathcal{X} \to \mathbb{R}$ is defined for each $t$ as
 
 $$
 \alpha_t(x) = \mathbb{P}_{\mu_0}[X_t = x, Z_{0:t} = z_{0:t}]
 $$
 
-How likely is it that I end up in $x$ having observed $z_{0:t}$
+> How likely is it that I end up in $x$ having observed $z_{0:t}$
 
 Given observation sequence $z_{0:T}$
-1. Multiply initial distribution by $O(z_0|:)$\
+1. Multiply initial distribution by $O(z_0|:)$
+
     equivalent to: $\alpha_0 =
     \text{diag}(O(z_0 | \cdot))\mu_0^T$
-2. At each time step:\
-    a. Multiply current distribution by $P$ \
-    b. Multiply by $O(z_0|:)$ \
-    equilvalent to :
+2. At each time step:
+
+    a. Multiply current distribution by $P$
+
+    b. Multiply by $O(z_0|:)$
+    equilvalent to:
     $\alpha_t = \text{diag}(O(z_t | \cdot))P^T \alpha_{t-1}$
 3. Normalize \
     $\mu_{T|0:T} = \frac{\alpha_T}{\text{sum}(\alpha_T)}$
@@ -84,46 +106,57 @@ Given observation sequence $z_{0:T}$
 
 #### Forward-backward algorithm
 
-Given a sequence of observations $z_{0:t}$, the backward mapping $ \beta_t :
+Given a sequence of observations $z_{0:t}$, the **backward mapping** $\beta_t :
 \mathcal{X} \to \mathbb{R}$ is defined for each $t$ as
 
 $$
 \beta_t(x) = \mathbb{P}_{\mu_0} [Z_{t+1:T} = z_{t+1:T} | X_t = x]
 $$
 
-How likely is it that I observe $z_{t+1:T}$ knowing that I'm in $x$
+> How likely is it that I observe $z_{t+1:T}$ knowing that I'm in $x$
 
 **Require**: Observation sequence $Z_{0:T}$
 
-1. **Initialize**\
-$\alpha_0 = \text{diag}(O(z_0 | \cdot))\mu_0^T$, $\beta_T =
-   1$  
-2. **For** $\tau = 1, \ldots, T$ **do** \
-   $\alpha_{\tau} = \text{diag}(O(z_{\tau} | \cdot))P^T \alpha_{\tau-1}$  
-   *Forward update*
+1. **Initialize**
+
+    $\alpha_0 = \text{diag}(O(z_0 | \cdot))\mu_0^T$, $\beta_T = 1$  
+
+2. **For** $\tau = 1, \ldots, T$ **do**
+
+    $\alpha_{\tau} = \text{diag}(O(z_{\tau} | \cdot))P^T \alpha_{\tau-1}$  
+    > Forward update
+
 3. **end for**
-4. **For** $\tau = T - 1, \ldots, 0$ **do** \
-   $\beta_{\tau} = P\text{diag}(O(z_{\tau+1} | \cdot))\beta_{\tau+1}$  
-   *Backward update* \
-   (Note: first $\beta$ initialize all to 1)
+
+4. **For** $\tau = T - 1, \ldots, 0$ **do** 
+
+    $\beta_{\tau} = P\text{diag}(O(z_{\tau+1} | \cdot))\beta_{\tau+1}$  
+
+    > *Backward update*
+    >
+    > (Note: first $\beta$ initialize all to 1)
 5. **end for**
 
-**return** \
-$\alpha_t \odot \beta_t / \text{sum}(\alpha_t \odot \beta_t)$  
-*Combine & normalize*
+6. **Combine & normalize**
+
+    $\alpha_t \odot \beta_t / \text{sum}(\alpha_t \odot \beta_t)$  
+
+    > $\mu_{t \mid 0: T}(x)=\frac{\beta_t(x) \alpha_t(x)}{\sum_{y \in \mathcal{X}} \beta_t(y) \alpha_t(y)}$
+
 
 #### Viterbi alghorithm
 
 **Require**: Observation sequence $z_{0:T}$
 
-1. **Initialize** \
-$m_0 = \text{diag}(O(z_0 | \cdot))\mu_0^T$
+1. **Initialize**
+
+    $m_0 = \text{diag}(O(z_0 | \cdot))\mu_0^T$
 
 2. **For** $\tau = 1, \ldots, T$ **do**
    
-   $m_{\tau} = \text{diag}(O(z_{\tau} | \cdot)) \max [P^T \text{diag}(m_{\tau-1})]$
+    $m_{\tau} = \text{diag}(O(z_{\tau} | \cdot)) \max [P^T \text{diag}(m_{\tau-1})]$
    
-   $i_{\tau} = \arg \max [P^T \text{diag}(m_{\tau-1})]$
+    $i_{\tau} = \arg \max [P^T \text{diag}(m_{\tau-1})]$
 
 3. **end for**
 
@@ -137,22 +170,23 @@ $m_0 = \text{diag}(O(z_0 | \cdot))\mu_0^T$
 
 **return** $x^*_{0:T}$
 
-<img src="vertebi_alg/1.png" width="400" height="200">
-<img src="vertebi_alg/2.png" width="400" height="200">
-<img src="vertebi_alg/3.png" width="400" height="200">
-<img src="vertebi_alg/4.png" width="400" height="200">
-<img src="vertebi_alg/5.png" width="400" height="200">
-<img src="vertebi_alg/6.png" width="400" height="200">
-<img src="vertebi_alg/7.png" width="400" height="200">
-<img src="vertebi_alg/8.png" width="400" height="200">
-<img src="vertebi_alg/9.png" width="400" height="200">
-<img src="vertebi_alg/10.png" width="400" height="200">
-<img src="vertebi_alg/11.png" width="400" height="200">
-<img src="vertebi_alg/12.png" width="400" height="200">
-<img src="vertebi_alg/13.png" width="400" height="200">
+> example
+>
+> <img src="vertebi_alg/1.png" width="300" height="200">
+> <img src="vertebi_alg/2.png" width="300" height="200">
+> <img src="vertebi_alg/3.png" width="300" height="200">
+> <img src="vertebi_alg/4.png" width="300" height="200">
+> <img src="vertebi_alg/5.png" width="300" height="200">
+> <img src="vertebi_alg/6.png" width="300" height="200">
+> <img src="vertebi_alg/7.png" width="300" height="200">
+> <img src="vertebi_alg/8.png" width="300" height="200">
+> <img src="vertebi_alg/9.png" width="300" height="200">
+> <img src="vertebi_alg/10.png" width="300" height="200">
+> <img src="vertebi_alg/11.png" width="300" height="200">
+> <img src="vertebi_alg/12.png" width="300" height="200">
+> <img src="vertebi_alg/13.png" width="300" height="100">
 
----
-### Preferences 
+## Preferences 
 
 $x$ is preferred to $y$, we write $x \succ y$
 
@@ -165,26 +199,23 @@ $y$
 $x \succ y \implies y \not\succ x$
 - It is negative transitive:
 $x \not\succ y \text{ and } y \not\succ z \text{ then } x \not\succ z$
-
 - If "≻" is a strict preference on some set of outcomes $(X)$
 
     - if "x ≻ y" or "x ~ y" we can write "x ≽ y" (x is not worse than y).
 
     - if "x ≺ y" or "x ~ y", we can write "x ≼ y" (x is not better than y).
 
-Utility:\
-u(x) ≥ u(y) if and only if x ≽ y.
+Utility: u(x) ≥ u(y) if and only if x ≽ y.
 
----
-### Taking decisions 
-
-example:
+## Taking decisions 
 
 If she returns home…
+
 - There is a 0.6 probability that she’ll arrive late at the
 University, due to traffic
 
 If she prints in the University…
+
 - There is a 0.3 probability that she can’t find a printer in time
 (she’ll submit an incomplete report)
 - There is a 0.5 chance that the printer is busy (she’ll submit the
@@ -201,8 +232,7 @@ What are the possible outcomes?
 
 H ≻ U
 
----
-### MDP (Markov decision problems)
+## MDP (Markov decision problems)
 
 $M = (\chi, A, \{P_a\}, c)$
 
@@ -215,17 +245,23 @@ $M = (\chi, A, \{P_a\}, c)$
 
 $h_t = \{x_0, a_0, x_1, a_1, ..., x_{t-1}, a_{t-1}\}$
 
-- Deterministic:
-    - if there is one action that is selected with probability 1\
-**Does not choose actions randomly**
-- Markov:
+- **Deterministic**
+
+    - if there is one action that is selected with probability 1
+
+        > **Does not choose actions randomly**
+- **Markov**
+
     - if the distribution over actions given the history depends only on the last
-    state (and t)\
-**Depends only on the last state**
-- Stationary:
+    state (and t)
+
+        > **Depends only on the last state**
+- **Stationary**
+
     - if the distribution over actions given the history depends only on the last
-    state (and not on t)\
-    **Fixed through time**
+    state (and not on t)
+
+        > **Fixed through time**
 
 #### $P_\pi$
 <img src="p_pi.png" width="400" height="190">
@@ -238,10 +274,11 @@ $h_t = \{x_0, a_0, x_1, a_1, ..., x_{t-1}, a_{t-1}\}$
 $$ J^\pi = c_\pi + \gamma P_\pi J^\pi $$
 $$ J^\pi = (I - \gamma P_\pi)^{-1} c_\pi $$
 
-#### Value iteration for $J^*$
+##### Value iteration for $J^*$
 
-$$ J^*(x) = \min_a \left[ c(x, a) + \gamma \sum_{y \in X} P_a(y | x)J^*(y)
-\right] $$
+$$ 
+J^*(x) = \min_a \left[ c(x, a) + \gamma \sum_{y \in X} P_a(y | x)J^*(y) \right]
+$$
 
 <img src="value_iter/1.png" width="400" height="190">
 <img src="value_iter/2.png" width="400" height="190">
@@ -251,10 +288,13 @@ $$ J^*(x) = \min_a \left[ c(x, a) + \gamma \sum_{y \in X} P_a(y | x)J^*(y)
 
 #### $Q^\pi$ (cost-to-go for a fixed policy, given the initial state and action)
 
-**Why should we care?**\
+**Why should we care?**
+
 We can compute cost-to-go functions from Q-functions:
 
-$$ J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)] $$
+$$ 
+J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)]
+$$
 $$ J^*(x) = \min_a Q^*(x, a) $$
 
 We can compute the optimal policy directly from $Q^*$:
@@ -267,23 +307,23 @@ $$ \pi^*(x) = \underset{a}{\text{arg min }} Q^*(x, a) $$
 Computation:
 - Since
   $$ Q^\pi(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' \mid x)J^\pi(x') $$
+
 - and
   $$ J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)] $$
+
 - then
 $$ Q^\pi(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' \mid
 x)\mathbb{E}_{a' \sim \pi(x')} [Q^\pi(x', a')] $$
 
-#### Value iteration for $Q^*$
+##### Value iteration for $Q^*$
 $$ Q^*(x, a) = c(x, a) + \gamma \sum_{x' \in X} P_a(x' | x) \min_{a'}
 Q^*(x', a') $$
-
-
 
 #### Policy iteration
 <img src="pol_iter/1.png" width="400" height="220">
 <img src="pol_iter/2.png" width="400" height="220">
 
-We stop this alghorithm when the policy stabilizes, meaning that we foundthe
+We stop this algorithm when the policy stabilizes, meaning that we found the
 optimal policy.
 
 #### Large problems
@@ -299,8 +339,7 @@ optimal policy.
     - Approximations that do not extrapolate
     - Such architectures are known as averagers
 
----
-### POMDP (partial observed Markov decision problems)
+## POMDP (partial observed Markov decision problems)
 
 $M = (\chi, A, Z, \{P_a\}, \{O_a\}, c)$
 
@@ -316,7 +355,7 @@ $M = (\chi, A, Z, \{P_a\}, \{O_a\}, c)$
 $h_t = \{z_0, a_0, z_1, a_1, ..., z_{t-1}, a_{t-1}\}$ (z is an observation not a
 state)
 
-the type of policies are equal to the **MDP** plus
+The type of policies are equal to the **MDP** plus
 
 - Memoryless:
     - if the distribution over actions given the history depends
@@ -335,45 +374,57 @@ only on the last observation
 We call the distribution $\mu_{t|0:t}$ the belief at time t belief $b(t)$
 
 When we want to calculate the $J^*$ we have a problem because we don't have
-the actualy state we have an distribution $b(t)$ that why we need to use
-heuristics
+the actual state, we have an distribution $b(t)$, that's why we need to use
+heuristics.
 
 #### Heuristics for value iteration
-- MLS\
+- MLS
+
     Select the most likely state
-- AV\
+
+- AV
+
     After choosing a an action for each state we sum all believes for the
     specific the bigger wins   
+
 - Q-MDP
-    $$ J^*(b) = \min_{a \in A} \sum_{x \in \mathcal{X}} b(x) Q^*_{\text{MDP}}(x, a) $$
-    Weighted average of optimal MDP Q-values
+
+    $$ 
+    J^*(b) = \min_{a \in A} \sum_{x \in \mathcal{X}} b(x) Q^*_{\text{MDP}}(x, a)
+    $$
+    > Weighted average of optimal MDP Q-values
+
 - FIB heuristic
+
     $$
     Q_{\text{FIB}}(x, a) = c(x, a) + \gamma \sum_{z \in \mathcal{Z}}
     \min_{a' \in A} \sum_{x' \in \mathcal{X}} P_a(x' | x) O_a(z | x')
     Q_{\text{FIB}}(x', a')
     $$
+
     $$
     \pi_{\text{FIB}}(b) = \underset{a \in A}{\text{argmin}} \sum_{x \in
     \mathcal{X}} b(x) Q_{\text{FIB}}(x, a)
     $$
 
 #### Point based
-Select a finite set Bsample of beliefs to perform updates
 
----
+Select a finite set sample of beliefs to perform updates
 
-### Learning from examples in MDPs
+## Learning from examples in MDPs
+
 We don't know the cost matrix neither the probability matrix
 
 #### The inductive learning assumption
 If we learn from a sufficiently large set of examples, we will do well in
 the actual task.
 
-- MDP-induced metric \
+- MDP-induced metric
+
     “clone” the observed behavior, using the MDP structure to generalize
 
-- Inverse reinforcement learning \
+- Inverse reinforcement learning
+
     “invert” the MDP 
 
 
@@ -399,7 +450,7 @@ $$c_{\pi} + \gamma P_{\pi} J^* \leq c_a + \gamma P_a J^*$$
 
 $$(P_{\pi} - P_a)(I - \gamma P_{\pi})^{-1}c \leq 0$$
 
-problem: all polices are optimal if c = 0 this is a ill-defined problem
+Problem: all polices are optimal if c = 0 this is a ill-defined problem
 
 #### Stochastic approximation (Interative learning)
 
@@ -507,11 +558,13 @@ Q_t(x_{t+1}, a_{t+1}) - Q_t(x_t, a_t) \right]$$
 
 #### $Q$-learning vs SARSA
 
-- Q-learning is an off-policy algorithm \
-Learns the value of one policy while following another
+- Q-learning is an off-policy algorithm
 
-- SARSA (like $TD(\lambda)$) is an on-policy algorithm \
-Learns the value of the policy that it follows
+    Learns the value of one policy while following another
+
+- SARSA (like $TD(\lambda)$) is an on-policy algorithm
+
+    Learns the value of the policy that it follows
     - For SARSA to learn Q* must be combined with policy improvement
 
 #### Large domains
