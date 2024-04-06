@@ -410,7 +410,7 @@ problem: all polices are optimal if c = 0 this is a ill-defined problem
 - Policy-based methods \
     the model trys to find de policy
 
-##### Model-based methods
+#### Model-based methods
 We update the cost function and the transition probabilities with the mean
 updated.
 
@@ -425,6 +425,44 @@ After each update we run VI update
 
 $$J_{t+1}(x_t) = \hat{c}(x_t) + \gamma \sum_{x' \in \mathcal{X}} \hat{P}(x' |
 x_t)J_t(x')$$
+
+#### Monte Carlo RL
+
+##### Computing $J^\pi$
+- Given a trajectory obtained with policy $\pi$
+
+$$
+\tau_k=\left\{x_{k, 0}, c_{k, 0}, x_{k, 1}, c_{k, 1}, \ldots, c_{k, T-1},
+x_{k, T}\right\}
+$$
+- Compute loss
+$$
+L\left(\tau_k\right)=\sum_{t=0}^{T-1} \gamma^t c_{k, t}
+$$
+- Update
+$$
+J_{k+1}\left(x_{k, 0}\right)=J_k\left(x_{k,
+0}\right)+\alpha_k\left(L\left(\tau_k\right)-J_k\left(x_{k, 0}\right)\right)
+$$
+
+**Theorem**: For T large enough, Monte Carlo policy evaluation
+converge w.p.1 to J , as long as every state is visited infinitely
+often.
+
+##### Computing $Q^\pi$
+- Given a trajectory obtained with policy $\pi$
+$$
+\tau_k=\left\{x_{k, 0}, a_{k, 0}, c_{k, 0}, x_{k, 1}, a_{k, 1}, c_{k, 1},
+\ldots, a_{k, T-1}, c_{k, T-1}, x_{k, T}\right\}
+$$
+- Compute loss
+$$
+L\left(\tau_k\right)=\sum_{t=0}^{T-1} \gamma^t c_{k, t}
+$$
+- Update
+$$
+Q_{k+1}\left(x_{k, 0}, a_{k, 0}\right)=Q_k\left(x_{k, 0}, a_{k, 0}\right)+\alpha_k\left(L\left(\tau_k\right)-Q_k\left(x_{k, 0}, a_{k, 0}\right)\right)
+$$
 
 #### $TD(\lambda)$
 
