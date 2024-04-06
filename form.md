@@ -25,7 +25,7 @@ The state at instant t is enough to predict the state at instant t + 1
     $d_x = \gcd \{ t \in \mathbb{N} | P^t(x | x) > 0, t > 0 \}$
     $\gcd$ represents the greatest common divisor function
 
-    A state $x$ is aperiodic if $dx = 1$\
+    A state $x$ is aperiodic if $dx = 1$
     > *example:*
     >
     > <img src="aperiodicity.png" width="400" height="200">
@@ -45,11 +45,13 @@ The state at instant t is enough to predict the state at instant t + 1
 >
 > - If the chain is irreducible and aperiodic, it is ergodic.
 
-## HMC (Hidden Markov models)
+## HMM (Hidden Markov models)
 
 Model for sequential process with partial observability.
 
 A HMM can be represented compactly as a tuple $(X, Z, P, O)$.
+
+Matrix O is state by observations.
 
 #### Estimation
 
@@ -368,6 +370,7 @@ only on the last observation
 <img src="pomdp_old_trick/3.png" width="350" height="190">
 <img src="pomdp_old_trick/4.png" width="350" height="190">
 <img src="pomdp_old_trick/5.png" width="350" height="190">
+<img src="pomdp_old_trick/6.png" width="350" height="190">
 
 #### The belief
 
@@ -406,6 +409,9 @@ heuristics.
     \pi_{\text{FIB}}(b) = \underset{a \in A}{\text{argmin}} \sum_{x \in
     \mathcal{X}} b(x) Q_{\text{FIB}}(x, a)
     $$
+    > example
+    >
+    > <img src="heuristic_FIB.png" width="450" height="100">
 
 #### Point based
 
