@@ -33,6 +33,9 @@ distribution $\mu^*$,\
 $\lim_{t \to \infty} \mu_0 P^t = \mu^*$\
 for any initial distribution $\mu_0$.
 
+
+if the chain is irreducible and aperiodic, it is ergodic.
+
 ---
 ### Hidden Markov models
 Model for sequential process with partial observability
@@ -422,17 +425,28 @@ x_t)J_t(x')$$
 
 #### $TD(\lambda)$
 
-<img src="td_alg.png" width="650" height="350">
+$$
+\begin{gathered}
+J_{t+1}(x)=J_t(x)+\alpha_t z_{t+1}(x)\left[c_t+\gamma J_t\left(x_{t+1}\right)-J_t\left(x_t\right)\right] \\
+z_{t+1}(x)=\lambda \gamma z_t(x)+\mathbb{I}\left(x=x_t\right)
+\end{gathered}
+$$
+
+- In this algorithm:
+    - Each update uses informations from multiple steps
+    - No looking in the future
+    - No "long transitions" required
 
 **Theorem:** For any $0 \leq \lambda \leq 1$, as long as every state is visited
 infinitely often, TD($\lambda$) converges to $J^\pi$ w.p.1.
+
 
 #### $Q$ learning
 
 $$Q_{t+1}(x_t, a_t) = Q_t(x_t, a_t) + \alpha_t \left[ c_t + \gamma \min_{a'
 \in A} Q_t(x_{t+1}, a') - Q_t(x_t, a_t) \right]$$
 
-Theorem: As long as every state-action pair is visited infinitely often,
+**Theorem:** As long as every state-action pair is visited infinitely often,
 Q-learning converges to $Q*$ w.p.1.
 
 #### Exploration vs exploitation
@@ -457,10 +471,12 @@ Learns the value of one policy while following another
 
 - SARSA (like $TD(\lambda)$) is an on-policy algorithm \
 Learns the value of the policy that it follows
-
     - For SARSA to learn Q* must be combined with policy improvement
 
-
+#### Large domains
+Monte Carlo methods **are** stochastic gradient descent methods
+Under mild conditions, they do converge but May be stuch in **local
+minimium**
 
 
 
