@@ -283,6 +283,9 @@ Q^*(x', a') $$
 <img src="pol_iter/1.png" width="400" height="220">
 <img src="pol_iter/2.png" width="400" height="220">
 
+We stop this alghorithm when the policy stabilizes, meaning that we foundthe
+optimal policy.
+
 #### Large problems
 - **State aggregation**
     - States are “aggregated” into “chunks”
