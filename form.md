@@ -14,11 +14,16 @@ The state at instant t is enough to predict the state at instant t + 1
 - **Irreducibility**
 
     A chain is irreducible if any state $y$ can be reached from any other
-    state $x$
+    state $x$.
 
 - **Communicating classes**
 
-    <img src="communicating_classes.png" width="400" height="200">
+    Every state in the subset is reachable from every other state in the subset.
+
+    > *example:*
+    >
+    > <img src="communicating_classes.png" width="400" height="200">
+
 
 - **Aperiodicity**
 
@@ -101,6 +106,10 @@ Given observation sequence $z_{0:T}$
     b. Multiply by $O(z_0|:)$
     equilvalent to:
     $\alpha_t = \text{diag}(O(z_t | \cdot))P^T \alpha_{t-1}$
+
+    > <img src="foward.png" width="400" height="200">
+    >
+    > don't forget to transpose $P$
 3. Normalize \
     $\mu_{T|0:T} = \frac{\alpha_T}{\text{sum}(\alpha_T)}$
 
@@ -297,7 +306,19 @@ We can compute cost-to-go functions from Q-functions:
 $$ 
 J^\pi(x) = \mathbb{E}_{a \sim \pi(x)} [Q^\pi(x, a)]
 $$
+
+> $J^\pi(x)$ is the element of each line of $Q^\pi(x, a)$ choosing the
+> action by the policy .
+
 $$ J^*(x) = \min_a Q^*(x, a) $$
+
+> $J^*$ is the element of each line of $Q^*(x, a)$ choosing the
+> action with the minium cost .
+
+> Note:
+> if $J^\pi(x) = \min_a Q^*(x, a)$, we can conclude that $J^\pi(x) = J^*(x)$
+> and $\pi$ is optimal
+
 
 We can compute the optimal policy directly from $Q^*$:
 
@@ -349,6 +370,10 @@ $M = (\chi, A, Z, \{P_a\}, \{O_a\}, c)$
 - Its action space, $A$
 - Its observation space, $Z$
 - Its transition probabilities, \{P_a\}, $a \in A$
+
+    > Represents the probability of observing observation $j$ when action $a$ is
+    > taken and the system is in the new state $i$.
+
 - Its observation probabilities, \{O_a\}, $a \in A$
 - The immediate cost function, $c$
 
