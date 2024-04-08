@@ -506,6 +506,11 @@ $$
 converge w.p.1 to J , as long as every state is visited infinitely
 often.
 
+**Exploration in MC**: We can update the cost-to-go for every state visited along a trajectory
+-  Consider only the first time a state appears: First-visit MC
+-  Consider all the times a state appears: Every-visit MC
+
+
 ##### Computing $Q^\pi$
 - Given a trajectory obtained with policy $\pi$
 $$
