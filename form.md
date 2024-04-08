@@ -605,15 +605,21 @@ Q_t(x_{t+1}, a_{t+1}) - Q_t(x_t, a_t) \right]$$
 
 #### On policy vs Off policy
 
-- *On-policy* methods are typically simpler and more stable but might struggle with exploration.
+- *On-policy* methods are typically simpler and more stable but might struggle with exploration. Leans the value of the policy that if follows.
 
-- *Off-policy* methods, while more complex, can efficiently reuse experiences and potentially learn faster.
+- *Off-policy* methods, while more complex, can efficiently reuse experiences and potentially learn faster. Learns the value of one policy while following another.
 
 #### Large domains
 
 Monte Carlo methods **are** stochastic gradient descent methods Under mild
 conditions, they do converge but May be stuch in **local minimium**
 
+
+Now instead of having a matrix we have some parameters $\theta$ we would like to update 
+
+> <img src="large_domais.png" width="250" height="100">
+>
+> $V$ is $J$ and $w$ is $\theta$
 
 
 
