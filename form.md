@@ -579,7 +579,22 @@ Under mild conditions, they do converge but May be stuch in **local
 minimium**
 
 
+### On policy vs Off policy
 
+We have two different policys when using reinforcement learning.
+Behaviour policy - policy that chooses the actions, could be random (chooses an action randomly) or maybe greedy (chooses the min cost action in the state)
+Target policy - policy that we use to update our Q values, could be any policy given or perhaps the same policy used for choosing the action
+
+- **On policy** - in this case, the behaviour policy is the same as the target policy, and will be improving it throughout the episode. 
+In SARSA, the agent learns the value of taking actions in a given state and follows an ε-greedy policy to explore the environment.
+An ε-greedy policy balances between exploration and exploitation by occasionally selecting a random action with probability ε, and otherwise selecting the greedy action.
+On-policy methods are typically simpler and more stable but might struggle with exploration.
+
+- **Off policy** - in off policy we use different policys to choose actions and learn Q values. We do not need to know what criteria was used to choose
+the actions to be able to learn the optimal Q function, like Q-Learning does.
+Can be interpreted as 1 person A navigating a maze, and choosing the actions based on it's own policy, and then another person B watching and creating an optimal policy
+based on the results by person A's results.
+Off-policy methods, while more complex, can efficiently reuse experiences and potentially learn faster.
 
 
 
