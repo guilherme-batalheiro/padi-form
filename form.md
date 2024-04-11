@@ -621,9 +621,108 @@ Now instead of having a matrix we have some parameters $\theta$ we would like to
 >
 > $V$ is $J$ and $w$ is $\theta$
 
+## Exploration vs Exploitation
+
+- N = number of sources
+
+- M = number of mistakes
 
 
+### Weighted majority algorithm
+
+- We measure our performance compared angaist that of the best "guess"
+
+- Usually, performance of the best guess can only be assessed a posteriori
+
+#### Algorithm
+
+- Given a set of $N$ “predictors” and $\eta$ < 1/2
+
+- Initialize predictor weights to $w_0(n) = 1, n = 1, ..., N $
+
+- Make predictions based on the (weighted) majority vote
+
+- Update weights of all wrong predictors as
+
+$$w_{t+1}(n) = w_t(n)(1 - \eta)$$
 
 
+### Exponentially Weighted Averager (EWA)
 
+- Select each action “proportionally” to its confidence:
+
+$$p_t(a)=\frac{w_t(a)}{\sum_{a^{\prime} \in \mathcal{A}} w_t\left(a^{\prime}\right)}$$
+
+- When cost is revealed, we update each “confidence” according to the
+  corresponding cost: 
+
+$$w_{t+1}(a)=w_t(a) e^{-\eta c_t(a)}$$
+
+- Then, at each step t,
+
+$$w_t(a)=e^{-\eta \sum_{\tau=0}^{t-1} c_\tau(a)}$$
+
+- It makes no assumptions on the process by which costs are selected (can be
+  adversarial)
+
+- Depends logarithmically on the number of actions (works well even if there is
+  an exponentially large number of actions to try)
+
+- Its regret is sublinear in T
+
+
+### EXP3
+
+- The diference is that in this scenario we do not observe the cost for all
+actions, so we can only update weight for current action.
+
+- Actions experimented more often will have more updates, which
+will unbalance weights! So we compensate
+
+#### Algorithm
+
+- Given a set of $N$ actions and $\eta>0$
+
+- Initialize weights to $w_0(a)=1, a \in \mathcal{A}$
+
+- Select an action according to the probabilities
+
+$$
+p_t(a)=\frac{w_t(a)}{\sum_{a^{\prime} \in \mathcal{A}} w_t\left(a^{\prime}\right)}
+$$
+
+- Update weights of all actions as
+
+$$
+w_{t+1}\left(a_t\right)=w_t\left(a_t\right) e^{-\eta \frac{c_t\left(a_t\right)}{p_t\left(a_t\right)}}
+$$
+
+
+- It makes no assumptions on the process by which costs are selected (can be
+  adversarial)  
+
+- Depends sublinearly on the number of actions 
+
+- Its regret is sublinear in T
+
+### Stochastic bandits
+
+- What is the goal? 
+    - Select action with smallest average cost 
+
+#### UCB algorithm
+
+- Execute each action once
+
+- From then on, at each step $t$, select action
+
+$$
+a^*=\underset{\substack{\text { Average } \\ \text { cost }}}{\operatorname{argmin}} \hat{c}(a)-\sqrt{\frac{2 \log t}{N_t(a)}}
+$$
+
+- Only observes cost for selected actions (bandit problem) 
+
+- It assumes that costs follow an unknown (but fixed) distribution
+
+- Its regret is sublinear in T
 
